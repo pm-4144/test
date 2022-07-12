@@ -1,0 +1,103 @@
+\def\TRUE{1}
+\def\FALSE{0}
+
+\def\mod#1by#2{%
+	\newcount\localcnta \localcnta = #1
+	\newcount\localcntb \localcntb = #1
+	\divide \localcnta by #2
+	\multiply \localcnta by #2
+	\advance \localcntb by -\localcnta
+	#1 = \localcntb}
+
+\newcount\c@nt
+\def\wether@leap{%
+	\newcount\cnt \cnt = \year
+	\mod \cnt by {400} \relax
+	\ifnum \cnt = 0 %
+		\global\c@nt = 1
+	\else
+		\mod \cnt by {100} \relax
+		\ifnum \cnt = 0 %
+			\global\c@nt = 0
+		\else
+			\mod \cnt by {4} \relax
+			\ifnum \cnt = 0 %
+				\global\c@nt = 1
+			\else
+				\global\c@nt = 0
+	\fi\fi\fi}
+
+\def\d@days{%
+	\ifcase \c@nt %
+		\ifcase \the\month %
+			\or \global\c@nt = 0
+			\or \global\c@nt = 3 
+			\or \global\c@nt = 3
+			\or \global\c@nt = 6
+			\or \global\c@nt = 1
+			\or \global\c@nt = 4
+			\or \global\c@nt = 6
+			\or \global\c@nt = 2
+			\or \global\c@nt = 5
+			\or \global\c@nt = 0
+			\or \global\c@nt = 3
+			\or \global\c@nt = 5
+		\fi
+	\or
+		\ifcase \the\month %
+			\or \global\c@nt = 0
+			\or \global\c@nt = 3
+			\or \global\c@nt = 4
+			\or \global\c@nt = 0
+			\or \global\c@nt = 2
+			\or \global\c@nt = 5
+			\or \global\c@nt = 0
+			\or \global\c@nt = 3
+			\or \global\c@nt = 6
+			\or \global\c@nt = 1
+			\or \global\c@nt = 4
+			\or \global\c@nt = 6
+		\fi
+	\fi} 
+
+
+
+\def\today{%
+	\wether@leap \relax
+	\d@days \relax
+	\wday, \wmon\ \the\day, \the\year}
+\def\wmon{%
+	\ifcase \the\month %
+		\or January\or February\or March\or April\or May\or June%
+		\or July\or August\or September\or October\or November\or December%
+	\fi
+}
+\def\wday{%
+	\newcount\cnta \cnta = \the\year %
+	\newcount\cntb
+	\newcount\cntc
+
+	\advance \cnta by -1
+	\mod \cnta by {400}
+
+	\cntb = \cnta
+	\divide \cntb by 4
+	\multiply \cntb by 5
+
+	\cntc = \cnta
+	\divide \cntc by 100
+
+	\mod \cnta by 4
+	\advance \cnta by \cntb
+	\advance \cnta by -\cntc
+	\mod \cnta by {7}
+
+	\advance \cnta by \c@nt
+	\advance \cnta by \day
+	\mod \cnta by {7} \relax
+
+	\ifcase \cnta %
+		Sunday\or Monday\or Tuesday\or Wednesday\or Thursday\or Friday\or Saturday
+	\fi}
+
+

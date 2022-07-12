@@ -1,0 +1,252 @@
+\documentclass{jreport}
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{mathrsfs}
+\usepackage{ascmac}
+\usepackage{latexsym}
+\usepackage{mathtools}
+
+\usepackage[all]{xy}
+
+
+%\usepackage{layout}
+%\setlength{\textheight}{\paperheight}
+%\setlength{\topmargin}{-15.4truemm}
+%\addtolength{\topmargin}{-\headheight}
+%\addtolength{\topmargin}{-\headsep}
+%\addtolength{\textheight}{-15truemm}
+
+%\setlength{\textwidth}{\paperwidth}
+%\setlength{\oddsidemargin}{-15.4truemm}
+%%\setlength{\evensidemargin}{-23.4truemm}
+%\addtolength{\textwidth}{-20truemm}
+
+\usepackage{what_day}
+
+
+
+
+
+
+\begin{document}
+
+
+ヘッダファイル
+\begin{tabular}{}
+int read_cycle_shape(int *cycle_shape, int i_th);
+
+long int cal_hook(int *young_tabular, int m);
+
+long int cal_dim(int *young_tabular, int m);
+long int var_cal_dim(int i_th, int m);
+
+long int cal_ord_cc(int *cycle_shape);
+long int var_cal_ord_cc(int i_th, int m);
+
+void cal_young_tabular(int *young_tabular);
+void cal_young_tabular_sub(int *young_tabular, int m);
+
+void cal_qsort(int *array, int range_size,int order);
+void cal_split(int *cycle_shape, int *split);
+void cal_cycle_shape(int *cycle_shape);
+void var_cal_cycle_shape(int *cycle_shape);
+
+#endif
+#ifndef CAL_CHR_H
+#define CAL_CHR_H
+
+#include "common.h"
+
+int cal_chr_0(int *phi);	//chi_s
+int cal_chr_1(int *phi);	//trivial
+int cal_chr_2(int *phi);	//sign
+int cal_chr_3(int *phi);	//fix - 1
+int cal_chr_4(int *phi);	//chi_3 * sgn
+int cal_chr_5(int *phi);	//chi_a
+int cal_chr_6(int *phi);	//chi_a * sgn
+int cal_chr_7(int *phi);	//chi_s - chi_1 - chi_3
+int cal_chr_8(int *phi);	//chi_7 * sgn
+
+void cal_chr_set(int i_th);
+
+void cal_chr_row(int i_th, int j_th);
+void cal_chr_col(int i_th, int j_th, long int init);
+
+void cal_chr_init(int i_th);
+
+void cal_chr_ALL(void);
+
+
+
+
+#endif
+#ifndef COMMON_H
+#define COMMON_H
+
+#include<stdbool.h>
+#include<stdio.h>
+#include<stdlib.h>
+#include<errno.h>
+#include<string.h>
+#include<math.h>
+
+#define n 4
+
+
+
+#if n <= 8
+#	define n_prime 8
+#	define TERMINAL 22
+#	define cycle_shape_f "cycle_shape_8.txt"
+#	define split_fmt "%3d"
+#	define SPLIT_SIZE 4
+#elif n <= 16
+#	define n_prime 16
+#	define TERMINAL 231
+#	define cycle_shape_f "cycle_shape_16.txt"
+#	define split_fmt "%4d"
+#	define SPLIT_SIZE 5
+#elif n <= 32
+#	define n_prime 32
+#	define TERMINAL 8349
+#	define cycle_shape_f "cycle_shape_32.txt"
+#	define split_fmt "%5d"
+#	define SPLIT_SIZE 6
+#elif n <= 64
+#	define n_prime 64
+#	define TERMINAL 1741630
+#	define cycle_shape_f "cycle_shape_64.txt"
+#	define split_fmt "%8d"
+#	define SPLIT_SIZE 9
+#endif
+
+#define POS_SIGN	(3*n_prime/2)
+#define POS_FIX		(POS_SIGN + 3)
+#define POS_SPLIT	(POS_SIGN + 6)
+#define LINE_SIZE_CS	(POS_SPLIT + SPLIT_SIZE)
+
+#define n1 (n_prime/2)
+#define n2 (n_prime/2 + 2)
+
+#define num_cc_f 	"num_cc.txt"
+#define num_cc_fmt 	"%7d\n"
+#define ord_cc_f 	"ord_cc.txt"
+#define dim_f 		"dim.txt"
+
+
+#define MALLOC_ARRAY(number, type) \
+	((type *)malloc((number) * sizeof(type)))
+#define PP_MALLOC(pp, number, type) \
+	do{\
+	pp = MALLOC_ARRAY(number, type *);\
+	for(int i = 0; i < number; i++)\
+	        if ((*(pp + i) = MALLOC_ARRAY(number, type)) == NULL)\
+	                exit( EXIT_FAILURE );\
+	}while(0)
+#define PP_FREE(pp,number) \
+	do{\
+	for(int i = 0; i < number; i++)\
+		free(*(pp + i));\
+	free(pp);}while(0)
+#define SQRT(sq) ((int) sqrt((double) sq))
+
+
+//declare factorial
+long int fact[n_prime + 1];
+
+//declare array
+int num_cc[n_prime];
+
+#define term (*(num_cc + n-1))
+
+long int *ord_cc;
+long int *col_range;
+
+int *split;
+int *dim;
+
+//declare arrays as character of representation
+int *chr;
+int *sgn;
+int *fix;
+
+//declare a mat as a charcter table
+int **chi;
+
+int *row1;
+int *row2;
+int *col;
+
+
+int flag;
+
+#endif
+#ifndef MAIN_H
+#define MAIN_H
+
+
+#include "mk_file.h"
+
+
+
+
+
+#endif
+#ifndef MK_ARRAY_H
+#define MK_ARRAY_H
+
+#include "cal_chr.h"
+#include "cal.h"
+
+void mk_array_fact(void);
+int mk_array_num_cc(void);
+
+int mk_array_ord_cc(void);
+int mk_array_split(void);
+
+//make array as character of representation
+int mk_array_char(void);
+int mk_array_sgn(void);
+int mk_array_fix(void);
+
+//
+int mk_array_dim_sub(int m);
+int mk_array_dim(void);
+int re_array_dim(void);
+int mk_array_col_range(void);
+void mk_array_search_range(void);
+
+
+void MALLOC_ALL(void);
+void FREE_ALL(void);
+void mk_array_ALL(void);
+
+
+#endif
+#ifndef MK_FILE
+#define MK_FILE
+
+#include "mk_array.h"
+
+int mk_file_cycle_shape(void);
+int mk_file_num_cc(void);
+int mk_file_ord_cc(void);
+int mk_file_dim(void);
+
+void mk_file_ALL(void);
+
+#endif
+
+
+
+
+
+
+
+
+
+
+\end{document}
